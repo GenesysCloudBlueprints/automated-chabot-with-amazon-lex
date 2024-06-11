@@ -1,6 +1,6 @@
 ---
 title: Expedite your Genesys Cloud Amazon Lex bot design with the Amazon Lex automated chatbot designer
-author: terri.ferris
+author: teri.ferris
 indextype: blueprint
 icon: blueprint
 image: images/overview.png
@@ -67,6 +67,9 @@ The solution workflow consists of the following steps:
 * Terraform (the latest binary). For more information, see [Download Terraform](https://www.terraform.io/downloads.html "Goes to the Download Terraform page") on the Terraform website.
 
 ## Implementation steps
+You can implement Genesys Cloud objects manually or with Terraform.
+* [Configure Genesys Cloud and Amazon using Terraform](#configure-genesys-cloud-and-amazon-using-terraform)
+* [Configure Genesys Cloud and Amazon manually](#configure-genesys-cloud-and-amazon-manually)
 
 ### Download the repository that contains the project files
 
@@ -87,16 +90,20 @@ The solution workflow consists of the following steps:
 
 ### Configure your Terraform build
 
-In the **blueprint/terraform/dev.auto.tfvars** file, set the following values, which are specific to your Genesys Cloud organization:
+Set the following values in the **/terraform/dev.auto.tfvars** file that are specific to your Genesys Cloud organization:
 
-* `queue_name`  - The queue the agents use for the callback script
-* `org_id`      - The organization ID of your Genesys Cloud instance
+* `aws_account_id` - The AWS Account ID associated with the event source creation.
+* `aws_region` - The AWS region where the event source is made available for an event bus. For example, `us-east-1`.
+* `aws_event_bus_name` - A unique name appended to the event source in the AWS account. The name can be up to 64 characters and includes lower or uppercase letters, numbers, and the special characters '.', '-', and '_'.
+* `genesys_cloud_organization_id` - Your Genesys Cloud organization ID. In Genesys Cloud, you can navigate from **Admin** > **Organization Settings** > **Advanced** to get the ID.
 
 The following is an example of the **dev.auto.tfvars** file.
 
 ```
-queue_name  = "Customer Support"
-org_id      = "your-org-id"
+aws_account_id                = "aws-account-id"
+aws_region                    = "aws-region"
+aws_event_bus_name            = "gc-event-streaming"
+genesys_cloud_organization_id = "genesys-cloud-org-id"
 ```
 
 ### Run Terraform
@@ -117,6 +124,15 @@ After the `terraform apply --auto-approve` command successfully completes, you s
 * This project assumes that you run this blueprint solution with a local Terraform backing state, which means that the `tfstate` files are created in the same folder where you run the project. Terraform recommends that you use local Terraform backing state files only if you run from a desktop and are comfortable with the deleted files.
 
 * As long as you keep your local Terraform backing state projects, you can tear down this blueprint solution. To tear down the solution, change to the `docs/terraform` folder and issue the `terraform destroy --auto-approve` command. This command destroys all objects that the local Terraform backing state currently manages.
+
+### Role and OAuth configuration
+
+1. Navigate to **Admin > People & Permissions > Roles / Permissions > People**.
+2. Assign the `Transcription Role` to your user account.
+3. Navigate to **Admin > Integrations > OAuth > `Transcription OAuth Client`**.
+4. In the **Roles** tab, enable the `Transcription Role` toggle.
+
+You can now jump to [Deploy the solution](#deploy-the-solution) section.
 
 ## Configure Genesys Cloud and Amazon manually
 
@@ -154,20 +170,20 @@ This generates new values for **Client ID** and **Client Secret**. Copy these va
 After you have set up the Genesys EventBridge integration, you can deploy an [AWS Serverless Application Model](https://aws.amazon.com/serverless/sam/) (AWS SAM) template, which deploys the remainder of the architecture. To deploy the solution in your account, complete the following steps:
 1. Install AWS SAM if not installed already. For instructions, refer to [Installing the AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html).
 2. Download the [GitHub repo](https://github.com/aws-samples/lex-automated-chatbot-designer-genesys-transcripts) and unzip to your directory.
-3. Navigate to the `genesys-to-lex-automated-chatbot-designer` folder and run the following commands:
+3. Navigate to the `lex-automated-chatbot-designer-genesys-transcripts` folder and run the following commands:
   ```
   sam build --use-container
-  sam deploy –guided
+  sam deploy -–guided
   ```
 The first command will build the source of your application. The second command will package and deploy your application to AWS, with a series of prompts:
 
  * **Stack Name**: The name of the stack to deploy to [AWS CloudFormation](http://aws.amazon.com/cloudformation). This should be unique to your account and region, and a good starting point would be something matching your project name.
  * **AWS Region**: The AWS region you want to deploy your app to. Make sure it is deployed in the same region as the Event bridge
- * **Parameter GenesysBusname**: This is the bus name created when Genesys integratoin is configured.  As mentioned in the prerequisites section enter the name of the bus here. The pattern of the bus name should look like `aws.partner/genesys.com/*`
- * **Parameter ClientId**: This is mentioned in the prerequisite section , copy the parameter  value from Genesys Cloud CX.
- * **Parameter ClientSecret**: This is mentioned in the prerequisite section , copy the parameter  value from Genesys Cloud CX.
+ * **Parameter GenesysBusname**: This is the bus name created when Genesys integration is configured. As mentioned in the prerequisites section enter the name of the bus here. The pattern of the bus name should look like `aws.partner/genesys.com/*`
+ * **Parameter ClientId**: This is mentioned in the prerequisite section, copy the parameter value from Genesys Cloud CX.
+ * **Parameter ClientSecret**: This is mentioned in the prerequisite section, copy the parameter value from Genesys Cloud CX.
  * **Parameter FileNamePrefix**: This is the file name prefix for the target transcript file in the raw bucket. There is a default value associated with it, but can be changed.
- * **Parameter GenCloudEnv**: This is the cloud environment for the specific Genesys organization. Genesys is available in more than 15 regions world wide today, so this value is mandatory and should point to the environment where your organizatoin is created in Genesys eg: usw2.pure.cloud
+ * **Parameter GenCloudEnv**: This is the cloud environment for the specific Genesys organization. Genesys is available in more than 15 regions world wide today, so this value is mandatory and should point to the environment where your organization is created in Genesys eg: usw2.pure.cloud
  * **Confirm changes before deploy**: If set to yes, any change sets will be shown to you before execution for manual review. If set to no, the AWS SAM CLI will automatically deploy application changes. 
  * **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create [AWS IAM](https://aws.amazon.com/iam/) roles required for the AWS Lambda function(s) included to access AWS services. By default, these are scoped down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or modifies IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If permission isn't provided through this prompt, to deploy this example you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
  * **Save arguments to samconfig.toml**: If set to yes, your choices will be saved to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
