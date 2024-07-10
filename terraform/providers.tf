@@ -16,6 +16,10 @@ terraform {
   }
 }
 
+provider "genesyscloud" {
+  sdk_debug = true
+}
+
 provider "aws" {
   region = var.aws_region
 }

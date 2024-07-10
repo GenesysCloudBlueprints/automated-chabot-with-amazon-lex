@@ -1,0 +1,37 @@
+version: 0.1
+default:
+  global:
+    parameters:
+      stack_name: eventbridge-transcribe-AmazonLexBot-poc
+      hook_name: terraform
+      skip_prepare_infra: true
+  build:
+    parameters:
+      cached: true
+      parallel: true
+      terraform_project_root_path: ../
+  validate:
+    parameters:
+      lint: true
+  deploy:
+    parameters:
+      capabilities: CAPABILITY_IAM
+      confirm_changeset: true
+      resolve_s3: true
+      s3_prefix: cavc-poc
+      region: us-east-1
+      parameter_overrides: "GenesysBusname=\"aws.partner/genesys.com/cloud/8d6f6281-c096-4dab-b194-a6f1667d7dd4/aaa-eventbridge-blueprint\" ClientId=\"ee023011-a49d-4385-9e8f-cbaaf1469fad\" ClientSecret=\"y_uUOxKZ3Ungyz7rDgyH_71eIJvZNkBOumXCNY41BXo\" FileNamePrefix=\"\t\" GenCloudEnv=\"purecloud.com\" HttpTimeOut=\"10\""
+      image_repositories: []
+      stack_name: cavc-poc
+  package:
+    parameters:
+      resolve_s3: true
+  sync:
+    parameters:
+      watch: true
+  local_start_api:
+    parameters:
+      warm_containers: EAGER
+  local_start_lambda:
+    parameters:
+      warm_containers: EAGER

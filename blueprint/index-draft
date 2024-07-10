@@ -173,7 +173,7 @@ After you have set up the Genesys EventBridge integration, you can deploy an [AW
 3. Navigate to the `lex-automated-chatbot-designer-genesys-transcripts` folder and run the following commands:
   ```
   sam build --use-container
-  sam deploy -–guided
+  sam deploy --guided
   ```
 The first command will build the source of your application. The second command will package and deploy your application to AWS, with a series of prompts:
 

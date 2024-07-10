@@ -2,37 +2,6 @@
 #####  Genesys Cloud Objects  #####
 ###################################
 
-# Create a custom role
-resource "genesyscloud_auth_role" "transcription_role" {
-  name        = "Transcription Role"
-  description = "Custom Role for Transcription"
-  permission_policies {
-    domain      = "recording"
-    entity_name = "recording"
-    action_set  = ["view","viewSensitiveData"]
-  }
-  permission_policies {
-    domain      = "recording"
-    entity_name = "recordingSegment"
-    action_set  = ["view"]
-  }
-  permission_policies {
-    domain      = "speechAndTextAnalytics"
-    entity_name = "data"
-    action_set  = ["view"]
-  }
-}
-
-# Create OAuth - Client Credentials
-resource "genesyscloud_oauth_client" "example-client" {
-  name                          = "Transcription OAuth Client"
-  access_token_validity_seconds = 86400
-  authorized_grant_type         = "CLIENT-CREDENTIALS"
-  roles {
-    role_id     = genesyscloud_auth_role.transcription_role.id
-  }
-}
-
 # Create EventBridge Integration
 module "AwsEventBridgeIntegration" {
    source              = "git::https://github.com/GenesysCloudDevOps/aws-event-bridge-module.git?ref=main"
@@ -56,4 +25,29 @@ data "aws_cloudwatch_event_source" "genesys_event_bridge" {
 resource "aws_cloudwatch_event_bus" "genesys_audit_event_bridge" {
   name              = data.aws_cloudwatch_event_source.genesys_event_bridge.name
   event_source_name = data.aws_cloudwatch_event_source.genesys_event_bridge.name
+}
+
+# AWS SAM
+module "lambda_function_ConvertToLexFormat" {
+  source        = "terraform-aws-modules/lambda/aws"
+  version       = "~> 6.0"
+  timeout       = 300
+  source_path   = "./src/ConvertToLexFormat/"
+  function_name = "ConvertToLexFormat"
+  handler       = "app.lambda_handler"
+  runtime       = "python3.9"
+  create_sam_metadata = true
+  publish       = true
+}
+
+module "lambda_function_ReadFromEBandWritetoS3" {
+  source        = "terraform-aws-modules/lambda/aws"
+  version       = "~> 6.0"
+  timeout       = 300
+  source_path   = "./src/ReadFromEBandWritetoS3/"
+  function_name = "ReadFromEBandWritetoS3"
+  handler       = "app.lambda_handler"
+  runtime       = "python3.9"
+  create_sam_metadata = true
+  publish       = true
 }
