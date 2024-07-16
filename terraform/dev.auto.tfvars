@@ -1,4 +1,10 @@
-aws_account_id                = "435681138675"
+# AWS Credentials
+aws_account_id                = "aws-account-id"
 aws_region                    = "us-east-1"
-aws_event_bus_name            = "aaa-cavc-blueprint-sample"
-genesys_cloud_organization_id = "03671e89-0883-48b0-8284-cd5260c38745" // Genesys4
+aws_event_bus_name            = "automated-chatbot-with-amazon-lex"
+
+# Genesys
+genesys_cloud_organization_id = "genesys-cloud-org-id"
+client_id                     = "your-client-id"
+client_secret                 = "your-client-secret"
+gen_cloud_env                 = "us-east-1"

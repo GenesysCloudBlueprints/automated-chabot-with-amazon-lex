@@ -74,7 +74,6 @@ You can implement Genesys Cloud objects manually or with Terraform.
 ### Download the repository that contains the project files
 
 1. Clone the [automated-chabot-with-amazon-lex repository](https://github.com/GenesysCloudBlueprints/automated-chabot-with-amazon-lex "Opens the automated-chabot-with-amazon-lex repository in GitHub").
-2. Clone the [lex-automated-chatbot-designer-genesys-transcripts repository](https://github.com/aws-samples/lex-automated-chatbot-designer-genesys-transcripts "Opens the lex-automated-chatbot-designer-genesys-transcripts repository in GitHub")
 
 ## Configure Genesys Cloud and Amazon using Terraform
 
@@ -96,14 +95,23 @@ Set the following values in the **/terraform/dev.auto.tfvars** file that are spe
 * `aws_region` - The AWS region where the event source is made available for an event bus. For example, `us-east-1`.
 * `aws_event_bus_name` - A unique name appended to the event source in the AWS account. The name can be up to 64 characters and includes lower or uppercase letters, numbers, and the special characters '.', '-', and '_'.
 * `genesys_cloud_organization_id` - Your Genesys Cloud organization ID. In Genesys Cloud, you can navigate from **Admin** > **Organization Settings** > **Advanced** to get the ID.
+* `client_id` - The value of your OAuth Client ID using Client Credentials to be used for the data action integration.
+* `client_secret`- The value of your OAuth Client secret using Client Credentials to be used for the data action integration.
+* `gen_cloud_env` - The Genesys Cloud region where the event source will be made available for an event bus. For example, `us-east-1`.
 
 The following is an example of the **dev.auto.tfvars** file.
 
 ```
+# AWS Credentials
 aws_account_id                = "aws-account-id"
-aws_region                    = "aws-region"
-aws_event_bus_name            = "gc-event-streaming"
+aws_region                    = "us-east-1"
+aws_event_bus_name            = "automated-chatbot-with-amazon-lex"
+
+# Genesys
 genesys_cloud_organization_id = "genesys-cloud-org-id"
+client_id                     = "your-client-id"
+client_secret                 = "your-client-secret"
+gen_cloud_env                 = "us-east-1"
 ```
 
 ### Run Terraform
@@ -124,15 +132,6 @@ After the `terraform apply --auto-approve` command successfully completes, you s
 * This project assumes that you run this blueprint solution with a local Terraform backing state, which means that the `tfstate` files are created in the same folder where you run the project. Terraform recommends that you use local Terraform backing state files only if you run from a desktop and are comfortable with the deleted files.
 
 * As long as you keep your local Terraform backing state projects, you can tear down this blueprint solution. To tear down the solution, change to the `docs/terraform` folder and issue the `terraform destroy --auto-approve` command. This command destroys all objects that the local Terraform backing state currently manages.
-
-### Role and OAuth configuration
-
-1. Navigate to **Admin > People & Permissions > Roles / Permissions > People**.
-2. Assign the `Transcription Role` to your user account.
-3. Navigate to **Admin > Integrations > OAuth > `Transcription OAuth Client`**.
-4. In the **Roles** tab, enable the `Transcription Role` toggle.
-
-You can now jump to [Deploy the solution](#deploy-the-solution) section.
 
 ## Configure Genesys Cloud and Amazon manually
 
@@ -165,7 +164,7 @@ To enable the EventBridge integration with Genesys Cloud, complete the following
 This generates new values for **Client ID** and **Client Secret**. Copy these values to use in the next section, where you configure the template for the solution.
 ![OAuth Client Credentials](./images/oauth-client-creds.png)
 
-## Deploy the solution
+### Deploy the solution
 
 After you have set up the Genesys EventBridge integration, you can deploy an [AWS Serverless Application Model](https://aws.amazon.com/serverless/sam/) (AWS SAM) template, which deploys the remainder of the architecture. To deploy the solution in your account, complete the following steps:
 1. Install AWS SAM if not installed already. For instructions, refer to [Installing the AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html).
