@@ -244,3 +244,15 @@ sam delete
 * [AWS Lambda](https://aws.amazon.com/lambda/)
 * [GitHub repository automated-chabot-with-amazon-lex](https://github.com/GenesysCloudBlueprints/automated-chabot-with-amazon-lex)
 * [GitHub lex-automated-chatbot-designer-genesys-transcripts repository](https://github.com/aws-samples/lex-automated-chatbot-designer-genesys-transcripts)
+
+## Authors
+
+![Joe Morotti](./images/joe-morotti.jpg)
+
+**Joe Morotti** is a Solutions Architect at Amazon Web Services (AWS), helping Enterprise customers across the Midwest US. He has held a wide range of technical roles and enjoy showing customer’s art of the possible. In his free time, he enjoys spending quality time with his family exploring new places and over analyzing his sports team’s performance.
+
+---
+
+![Anand Bose](./images/anand-bose.png)
+
+**Anand Bose** is a Senior Solutions Architect at Amazon Web Services, supporting ISV partners who build business applications on AWS. He is passionate about creating differentiated solutions that unlock customers for cloud adoption. Anand lives in Dallas, Texas and enjoys travelling.
